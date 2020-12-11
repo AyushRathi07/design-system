@@ -1,6 +1,7 @@
 import React from 'react'
+import { render } from 'testing-library'
 
-import { Input } from '..'
+import { Input, theme, createTheme, getPaletteColor } from '..'
 
 const id = 'fake-test-id'
 
@@ -22,5 +23,43 @@ describe('Input', () => {
       <Input id={id} fontSize={4} />
     ).toJSON()
     expect(json).toMatchSnapshot()
+  })
+  test('it renders an input element with helper text', () => {
+    const helperText = 'hello world'
+    const paletteTheme = createTheme(theme)
+    const { getByText, rerender } = render(
+      <Input
+        id={id}
+        helperText={<Input.ErrorText>{helperText}</Input.ErrorText>}
+      />
+    )
+    let helperTextNode = getByText(helperText)
+    expect(helperTextNode).not.toBeNull()
+    expect(helperTextNode).toHaveStyleRule(
+      'color',
+      getPaletteColor('error.base')({ theme: paletteTheme })
+    )
+    rerender(
+      <Input
+        id={id}
+        helperText={<Input.AlertText>{helperText}</Input.AlertText>}
+      />
+    )
+    helperTextNode = getByText(helperText)
+    expect(helperTextNode).toHaveStyleRule(
+      'color',
+      getPaletteColor('alert.base')({ theme: paletteTheme })
+    )
+    rerender(
+      <Input
+        id={id}
+        helperText={<Input.InfoText>{helperText}</Input.InfoText>}
+      />
+    )
+    helperTextNode = getByText(helperText)
+    expect(helperTextNode).toHaveStyleRule(
+      'color',
+      getPaletteColor('text.light')({ theme: paletteTheme })
+    )
   })
 })
